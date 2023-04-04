@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval =" [('module', '=', 'account'),('name', '=', 'email_template_edi_invoice')] "/>
+            </function>
+            <value eval="{'noupdate': False}" />
+        </function>
+        <!--Email template -->
+        <record id="account.email_template_edi_invoice" model="mail.template">
+            <field name="name">Invoice: Send by email</field>
+            <field name="lang">en_EN</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Buenos días
+                        % if object.partner_id.parent_id:
+                            ${object.partner_id.name} (${object.partner_id.parent_id.name}),
+                        % else:
+                            ${object.partner_id.name},
+                        % endif
+                        <br /><br />
+                        Adjunto factura
+                        % if object.name:
+                            <strong>${object.name}</strong>
+                        % else:
+
+                        %endif
+                        con fecha <strong>${object.invoice_date}</strong>, de importe <strong>${format_amount(object.amount_total, object.currency_id)}</strong> y vencimiento 
+                        %if object.invoice_date_due:
+                            <strong>${object.invoice_date_due}</strong>
+                        % else:
+
+                        %endif
+                        % if object.partner_id.street:
+                            por el trabajo realizado en su domicilio
+                            <strong>
+                                ${object.partner_id.street},
+                                % if object.partner_id.zip:
+                                    ${object.partner_id.zip},
+                                % else:
+                                % endif
+                                % if object.partner_id.state_id:
+                                    ${object.partner_id.state_id.name}.
+                                % else:
+                                .
+                                % endif
+                            </strong>
+                        % else:
+                        .
+                        % endif
+                        
+                        <br /><br />
+                        Agradecemos el pago puntual a su vencimiento indicando el número de factura.
+                        <br /><br />
+                        Quedo a disposición para cualquier duda o aclaración,
+                        <br /><br />
+                        Buen día,
+                        <br /><br />
+                        Un saludo,
+                        <br /><br />
+                        Lara Loiola
+                    </p>
+                </div>
+            </field>
+        </record>
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval =" [('module', '=', 'account'), ('name', '=', 'email_template_edi_invoice')] "/>
+            </function>
+            <value eval="{'noupdate': True}" />
+        </function>
+    </data>
+</odoo>

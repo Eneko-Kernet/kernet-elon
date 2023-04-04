@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+        <table name="invoice_line_table" position="attributes">
+            <attribute name="t-if">invoice_type == 'normal'</attribute>
+        </table>
+        <table name="invoice_line_table" position="after">
+            <table t-if="invoice_type == 'category'" class="table table-sm o_main_table" name="invoice_line_groupby_table">
+                <thead>
+                    <tr>
+                        <th name="th_category" class="text-left"><span>Category</span></th>
+                        <th name="th_amount" class="text-right"><span>Amount</span></th>
+                    </tr>
+                </thead>
+                <tbody class="invoice_tbody">
+                    <t t-set="categories" t-value="o.get_lines_groupby_category()"/>
+                    <t t-foreach="categories.items()" t-as="category">
+                        <tr>
+                            <td name="td_category_name" class="text-left">
+                                <span t-esc="category[0]" t-options="{'widget': 'text'}"/>
+                            </td>
+                            <td class="text-right o_price_total">
+                                <span class="text-nowrap" t-esc="category[1]['subtotal']" 
+                                    t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </table>
+    </template>
+    <template id="report_invoice_with_payments" inherit_id="account.report_invoice_with_payments">
+        <t t-call="web.html_container" position="before">
+           <t t-set="invoice_type" t-value="'normal'"/>
+        </t>
+    </template>
+    <template id="report_invoice_with_payments_by_category">
+        <t t-set="invoice_type" t-value="'category'"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lang" t-value="o.partner_id.lang"/>
+                <t t-set="print_with_payments" t-value="True"/>
+                <t t-if="o._get_name_invoice_report() == 'account.report_invoice_document'" t-call="account.report_invoice_document" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>
